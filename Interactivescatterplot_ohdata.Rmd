@@ -1,0 +1,56 @@
+---
+title: "Interactive Scatter Plot - OH Health Data"
+author: "Laurie Ann Moennich"
+date: "3/22/2019"
+output: html_document
+---
+
+# R Setup, Load Packages and Data
+```{r setup, message = FALSE}
+knitr::opts_chunk$set(comment=NA)
+options(width = 70)
+```
+
+```{r}
+library(dplyr)
+library(plotly)
+library(rms)
+library(knitr)
+library(broom)
+library(janitor)
+library(tidyverse)
+```
+
+
+```{r}
+ohdata <- read_csv("data/oh_counties_2017.csv") %>%
+    clean_names()
+ohdata
+```
+
+```{r}
+p <- plot_ly(
+  ohdata, x = ~food_insecure, y = ~african_am,
+  
+  hoverinfo= 'text',
+  
+  text = ~paste("County:", county, '<br> % of Residents Who Are Food Insecure:', food_insecure,'<br> % of Residents Who Are African American:', african_am),
+  color = ~african_am, size = ~african_am) %>%
+  
+  layout(
+      title = 'Examining Food Insecurity and Race - 
+         State of Ohio County Health Rankings, 2017',
+         
+  xaxis = list(title = "% of Residents Who Are Food Insecure"),
+  yaxis = list(side = 'left', title = '% of Residents Who Are African American'),
+  
+  annotations = list(text = 'A trend is observed by county: 
+                     The greater the population density of African American 
+                     residents, the higher the percentage of food insecurity reported.',
+                            font = list(size = 08),
+                            showarrow = FALSE,
+                            xref = 'paper', x = 0.1,
+                            yref = 'paper', y = 0.7))
+ 
+hide_colorbar(p)
+```
